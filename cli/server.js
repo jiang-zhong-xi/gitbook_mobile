@@ -1,8 +1,11 @@
 var http = require('http');
 var url = require('url');
 var send = require('send');
-var readerOriginFile = require('../lib/readOriginFile')
 var createVNode = require('../lib/createVNode/index.js')
+var documentVNode = require('../lib/documentVNode/index.js')
+var mountVNode = require('../lib/mountVNode/index.js')
+var attachStyle = require('../lib/attachStyle/index.js')
+var fs = require('../utils/fs.js');
 
 function Server() {
     this.running = null;
@@ -21,35 +24,16 @@ Server.prototype.start = function(_dir, port) {
   console.log('服务已经启动，端口'+port);
   
   async function create() {
-     var summary = await readerOriginFile('/test/SUMMARY.md')
+     await fs.copy('/_book', '/_mobile')
+     var summary = await fs.read('/SUMMARY.md')
      var vnode = await createVNode(summary)
+     var filesVNode = await documentVNode(vnode)
+     var style = await attachStyle()
      return vnode
   }
   create().then(res => {
-    console.log(res)
+    // console.log(res)
   })
-  // fs.copyFolder(path.join(dir+'/_book'), path.join(dir+'/_mobile'))
-  // .then(res => {
-  //   fs.read(path.join(dir+'/_book/index.html'))
-  //   .then(content => {
-  //     var html = htmlTemplate(content);
-  //     fs.write(path.join(dir+'/_mobile/index.html'), html)
-  //     .then(res => {
-        
-  //       fs.write(path.join(dir+'/_mobile/index.css'), style());
-        
-  //       fs.read(path.join(dir+'/_mobile/styles/website.css'))
-  //       .then(content => {
-  //         content += `
-  //           .book-header, .fa-angle-left, .fa-align-justify, .fa-angle-right, .fa-align-justify {
-  //             display: none;
-  //           }
-  //         `;
-  //         fs.write(path.join(dir+'/_mobile/styles/website.css'), content);
-  //       })
-  //     })
-  //   })
-  // })
   
   that.running = http.createServer(function(req, res){
     function error(err) {

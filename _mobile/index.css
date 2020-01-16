@@ -1,5 +1,4 @@
-function style(){
-  return `
+
     body {
       background: #F8F8F8;
       width: 100%;
@@ -68,6 +67,4 @@ function style(){
       width: 20px;
       height: 20px;
     }
-  `
-}
-module.exports = style
+  
